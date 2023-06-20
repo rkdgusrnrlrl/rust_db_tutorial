@@ -10,6 +10,13 @@ fn prompt(name: &str) -> String {
 }
 
 fn main() {
-    let input = prompt("db > ");
-    println!("{}", input);
+    loop {
+        let input = prompt("db > ");
+        if input == ".exit" {
+            break;
+        } else {
+            println!("Unrecognized command '{}'.", input);
+        }    
+    }
+    std::process::exit(0);
 }

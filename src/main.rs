@@ -5,6 +5,11 @@ enum MetaCommandResult {
     MetaCommandUnrecognizedCommand
 }
 
+enum PrepareResult {
+    PrepareSuccess,
+    PrepareUnrecognizedStatement,
+}
+
 fn prompt(name: &str) -> String {
     print!("{}", name);
     stdout().flush().unwrap();
@@ -21,6 +26,26 @@ fn do_meta_command(input: &str) -> MetaCommandResult {
     }
 }
 
+fn prepare_statement(input: &str) -> PrepareResult {
+    if input.starts_with("insert") {
+        PrepareResult::PrepareSuccess
+    } else if input.starts_with("select") {
+        PrepareResult::PrepareSuccess
+    } else {
+        PrepareResult::PrepareUnrecognizedStatement
+    }
+}
+
+enum StatementType {
+    StatementInsert,
+    StatementSelect
+}
+
+struct ExcuteStatement<'a> {
+    input: &'a str,
+    statement_type: StatementType
+}
+
 fn main() {
     loop {
         let input = prompt("db > ");
@@ -32,6 +57,13 @@ fn main() {
                 }
             }
         }
-        println!("{}", input);
+
+        match prepare_statement(&input) {
+            PrepareResult::PrepareSuccess => break,
+            PrepareResult::PrepareUnrecognizedStatement => {
+                println!("Unrecognized keyword at start of '{}'.", input);
+                    continue;   
+            }
+        }
     }
 }
